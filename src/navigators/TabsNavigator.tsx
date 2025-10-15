@@ -1,8 +1,10 @@
 import { View, Text } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../tabs/HomeScreen";
-import ProfileScreen from "../tabs/ProfileScreen";
+import HomeScreen from "../screens/tabs/HomeScreen";
+import ProfileScreen from "../screens/tabs/ProfileScreen";
+import BookingScreen from "../screens/tabs/BookingScreen";
+import StationScreen from "../screens/tabs/StationScreen";
 
 const Tab = createBottomTabNavigator();
 export default function TabsNavigator() {
@@ -22,6 +24,8 @@ export default function TabsNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Booking" component={BookingScreen} />
+      <Tab.Screen name="Station" component={StationScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

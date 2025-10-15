@@ -32,3 +32,15 @@ export interface LoginForm {
   usernameOrEmail: string;
   password: string;
 }
+
+import { NavigatorScreenParams } from "@react-navigation/native";
+
+export type RootStackParamList = {
+  Auth: undefined;
+  Tabs: undefined;
+  Stacks: NavigatorScreenParams<StackParamList> | undefined;
+};
+
+export type StackParamList = {
+  StationDetail: { stationId: string };
+};

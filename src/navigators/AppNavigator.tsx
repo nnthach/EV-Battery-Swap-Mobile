@@ -1,11 +1,11 @@
-import { View, Text } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import WelcomScreen from "../auth/WelcomScreen";
 import TabsNavigator from "./TabsNavigator";
 import AuthNavigator from "./AuthNavigator";
-const Stack = createNativeStackNavigator();
+import StackNavigator from "./StackNavigator";
+import { RootStackParamList } from "@/types";
 
+const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function AppNavigator() {
   return (
     <Stack.Navigator>
@@ -15,8 +15,13 @@ export default function AppNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Main"
+        name="Tabs"
         component={TabsNavigator}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Stacks"
+        component={StackNavigator}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
