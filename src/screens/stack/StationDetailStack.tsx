@@ -1,8 +1,14 @@
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
-import React from "react";
-import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
+import React, { useCallback } from "react";
+import {
+  useRoute,
+  RouteProp,
+  useNavigation,
+  useFocusEffect,
+} from "@react-navigation/native";
 import { StackParamList } from "@/types";
 import { LinearGradient } from "expo-linear-gradient";
+import { getStationByIdAPI } from "@/services/stationService";
 
 type StationDetailRouteProp = RouteProp<StackParamList, "StationDetail">;
 
@@ -17,6 +23,22 @@ export default function StationDetailStack() {
   const route = useRoute<StationDetailRouteProp>();
   const { stationId } = route.params;
   const navigation = useNavigation();
+  console.log("stationid", stationId);
+
+  const fetchStationDetail = async () => {
+    try {
+      const res = await getStationByIdAPI(stationId);
+      console.log("get station detail res", res.data);
+    } catch (error) {
+      console.log("get station detail err", error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchStationDetail();
+    }, [])
+  );
 
   const batterySlots: BatterySlot[] = [
     { id: 1, level: 100, label: "Slot 1", swappable: true },

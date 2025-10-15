@@ -16,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { login } from "@/services/authService";
 
 type AppNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function SignInScreen() {
@@ -35,7 +36,7 @@ export default function SignInScreen() {
 
   const handleSubmit = async () => {
     try {
-      // const user = await login(signInForm);
+      const user = await login(signInForm);
       navigation.reset({
         index: 0,
         routes: [{ name: "Tabs" }],
@@ -65,6 +66,7 @@ export default function SignInScreen() {
                   className="w-10 h-10 justify-center items-center bg-white rounded-full"
                 >
                   <Text>back</Text>
+                  {/* <ChevronLeft /> */}
                 </TouchableOpacity>
               </View>
               {/*Content */}
