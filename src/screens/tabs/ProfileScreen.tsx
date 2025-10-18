@@ -2,62 +2,100 @@ import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  UserCircle,
+  History,
+  CalendarCheck,
+  DollarSign,
+  LogOut,
+  ChevronRight,
+  Bell,
+} from "lucide-react-native";
+
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@/types";
 
 type MenuItem = {
   id: number;
   title: string;
   bgColor: string;
   textColor: string;
-  // iconName: MaterialIconName; // type an toàn cho icon
+  icon: React.ReactNode;
   iconColor: string;
   onPress?: () => void;
 };
 export default function ProfileScreen() {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const menuItems: MenuItem[] = [
     {
       id: 1,
       title: "Account Information",
       bgColor: "bg-green-200",
       textColor: "text-green-500",
-      // iconName: "person-outline",
+      icon: <UserCircle size={28} color="#22c55e" />,
       iconColor: "#22c55e",
+      onPress: () =>
+        navigation.navigate("Stacks", {
+          screen: "AccountInformation",
+        } as never),
     },
     {
       id: 2,
       title: "Usage History",
       bgColor: "bg-blue-200",
       textColor: "text-blue-500",
-      // iconName: "history",
+      icon: <History size={28} color="#3b82f6" />,
       iconColor: "#3b82f6",
+      onPress: () =>
+        navigation.navigate("Stacks", {
+          screen: "History",
+        } as never),
     },
     {
       id: 3,
       title: "My Booking",
       bgColor: "bg-yellow-200",
       textColor: "text-yellow-500",
-      // iconName: "calendar-month",
+      icon: <CalendarCheck size={28} color="#eab308" />,
       iconColor: "#eab308",
+      onPress: () =>
+        navigation.navigate("Stacks", {
+          screen: "MyBooking",
+        } as never),
     },
     {
       id: 4,
       title: "Transaction History",
       bgColor: "bg-purple-200",
       textColor: "text-purple-500",
-      // iconName: "attach-money",
+      icon: <DollarSign size={28} color="#a855f7" />,
       iconColor: "#a855f7",
+      onPress: () =>
+        navigation.navigate("Stacks", {
+          screen: "TransactionHistory",
+        } as never),
     },
     {
       id: 5,
       title: "Logout",
       bgColor: "bg-red-200",
       textColor: "text-red-500",
-      // iconName: "logout",
+      icon: <LogOut size={28} color="#ef4444" />,
       iconColor: "#ef4444",
       onPress: () => {
         // logout();
       },
     },
   ];
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  const lastInitial =
+    (user?.fullName ?? "").trim().split(" ").pop()?.[0]?.toUpperCase() ?? "";
+
   return (
     <LinearGradient colors={["#49AFF0", "white"]} className="flex-1">
       <SafeAreaView edges={["top"]} className="flex-1">
@@ -72,16 +110,26 @@ export default function ProfileScreen() {
               source={require("@/assets/logoTextWhite.png")}
               style={{ height: 56, width: 120, resizeMode: "contain" }}
             />
-            {/* <Entypo name="bell" size={24} color="white" /> */}
+            <Bell size={24} color="white" />
           </View>
 
           {/*User */}
           <View className="justify-center items-center mt-4 gap-2">
-            <View className="bg-gray-50 w-28 h-28 rounded-full">
-              <Image />
+            <View className="bg-gray-50 w-28 h-28 rounded-full overflow-hidden justify-center items-center">
+              {user?.avatar ? (
+                <Image
+                  source={{ uri: user?.avatar }}
+                  className="w-full h-full"
+                  resizeMode="cover"
+                />
+              ) : (
+                <Text className="text-5xl font-bold text-blue-500">
+                  {lastInitial}
+                </Text>
+              )}
             </View>
             <Text className="text-white text-2xl font-medium">
-              Nguyen Ngoc Thach
+              {user?.fullName}
             </Text>
           </View>
 
@@ -107,11 +155,7 @@ export default function ProfileScreen() {
                       <View
                         className={`${item.bgColor} rounded-full w-12 h-12 items-center justify-center`}
                       >
-                        {/* <MaterialIcons
-                          name={item.iconName}
-                          size={28}
-                          color={item.iconColor}
-                        /> */}
+                        {item.icon}
                       </View>
                       <Text className={`${item.textColor} font-medium text-xl`}>
                         {item.title}
@@ -119,11 +163,7 @@ export default function ProfileScreen() {
                     </View>
 
                     {/* Right */}
-                    {/* <MaterialIcons
-                      name="keyboard-arrow-right"
-                      size={28}
-                      color="gray"
-                    /> */}
+                    <ChevronRight size={28} color="gray" />
                   </TouchableOpacity>
                 ))}
               </View>

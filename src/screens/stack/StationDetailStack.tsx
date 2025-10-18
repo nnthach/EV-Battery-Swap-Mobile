@@ -8,7 +8,18 @@ import {
 } from "@react-navigation/native";
 import { StackParamList } from "@/types";
 import { LinearGradient } from "expo-linear-gradient";
-import { getStationByIdAPI } from "@/services/stationService";
+import { getStationByIdAPI } from "@/src/services/stationService";
+import {
+  ArrowLeft,
+  MapPin,
+  Clock,
+  Battery,
+  Zap,
+  Star,
+  Info,
+  Phone,
+  Navigation as NavigationIcon,
+} from "lucide-react-native";
 
 type StationDetailRouteProp = RouteProp<StackParamList, "StationDetail">;
 
@@ -86,10 +97,11 @@ export default function StationDetailStack() {
         "Good experience overall. The location is a bit hard to find, though.",
     },
   ];
+
   return (
-    <View className="flex-1 bg-gray-200">
-      {/*Image */}
-      <View className="relative h-[400px]">
+    <View className="flex-1 bg-white">
+      {/* Hero Image Section */}
+      <View className="relative h-72">
         <Image
           source={{
             uri: "https://images.pexels.com/photos/1267338/pexels-photo-1267338.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
@@ -98,182 +110,242 @@ export default function StationDetailStack() {
           resizeMode="cover"
         />
         <LinearGradient
-          colors={[
-            "rgba(0,0,0,0.7)", // trên tối
-            "transparent", // giữa sáng
-            "rgba(0,0,0,0.7)", // dưới tối
-          ]}
-          start={{ x: 0.5, y: 0 }} // bắt đầu từ trên giữa
-          end={{ x: 0.5, y: 1 }} // kết thúc ở dưới giữa
+          colors={["rgba(0,0,0,0.5)", "rgba(0,0,0,0.2)", "rgba(0,0,0,0.8)"]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
           className="absolute top-0 left-0 right-0 bottom-0"
         />
-        {/*Back */}
+
+        {/* Header Buttons */}
         <View className="absolute top-12 left-4 right-4 flex-row justify-between items-center">
           <TouchableOpacity
-            className="w-10 h-10 rounded-full bg-black/30 items-center justify-center"
+            className="w-11 h-11 rounded-full bg-white/90 items-center justify-center shadow-lg"
             onPress={() => navigation.goBack()}
           >
-            {/* <Ionicons name="arrow-back" size={24} color="white" /> */}
+            <ArrowLeft size={22} color="#1f2937" strokeWidth={2.5} />
+          </TouchableOpacity>
+
+          <TouchableOpacity className="w-11 h-11 rounded-full bg-white/90 items-center justify-center shadow-lg">
+            <Phone size={20} color="#1f2937" strokeWidth={2.5} />
           </TouchableOpacity>
         </View>
 
-        {/*station status */}
-        <View className="absolute top-[190px] left-6 flex-row gap-2">
-          <View className="bg-white px-3 py-1.5 rounded-full flex-row items-center gap-1">
-            <View className="w-2 h-2 rounded-full bg-green-500" />
-            <Text className="text-sm font-medium">Open</Text>
-          </View>
-          <View className="bg-orange-500 px-3 py-1.5 rounded-full flex-row items-center gap-1">
-            <Text className="text-sm font-medium text-white">
-              ⚡ {station.swappableBatteries} Batteries Swappable
-            </Text>
+        {/* Station Name & Status */}
+        <View className="absolute bottom-5 left-5 right-5">
+          <Text className="text-white text-2xl font-bold mb-2">
+            {station.name}
+          </Text>
+          <View className="flex-row items-center gap-2">
+            <View className="bg-emerald-500 px-3 py-1 rounded-full">
+              <Text className="text-white text-xs font-semibold">OPEN NOW</Text>
+            </View>
+            <View className="bg-white/20 backdrop-blur px-3 py-1 rounded-full flex-row items-center gap-1">
+              <Zap size={12} color="#fbbf24" fill="#fbbf24" />
+              <Text className="text-white text-xs font-semibold">
+                {station.swappableBatteries} Available
+              </Text>
+            </View>
           </View>
         </View>
       </View>
 
-      <View className="flex-1 bg-white rounded-3xl  px-5 py-4 -mt-48 mx-6 mb-6 overflow-hidden">
-        {/*Info */}
-        <ScrollView
-          className="flex-1 bg-white"
-          showsVerticalScrollIndicator={false}
-        >
-          <Text className="text-2xl font-bold text-gray-900 mb-4">
-            {station.name}
-          </Text>
-
-          {/*Address */}
-          <View className="flex-row items-start gap-3 mb-4">
-            {/* <Ionicons name="location-outline" size={18} color="#374151" /> */}
-            <Text className="flex-1 text-gray-600 text-sm leading-5">
-              {station.address}
-            </Text>
-          </View>
-
-          {/*time */}
-          <View className="flex-row items-center gap-3">
-            {/* <Ionicons name="time-outline" size={20} color="#374151" /> */}
-            <Text className="text-gray-900 text-sm">Monday, 10:00 - 21:00</Text>
-          </View>
-
-          {/*battery */}
-          <View className="mt-6">
-            <Text className="text-xs font-semibold text-gray-500 uppercase mb-2 tracking-wide">
-              Batteries
-            </Text>
-
-            {batterySlots.map((slot, index) => (
-              <View
-                key={slot.id}
-                className={`flex-row items-center justify-between py-4 ${
-                  index < batterySlots.length - 1
-                    ? "border-b border-gray-100"
-                    : ""
-                }`}
-              >
-                <View className="flex-row items-center gap-3 flex-1">
-                  <View className="relative">
-                    <View className="w-16 h-8 bg-gray-100 rounded-md overflow-hidden">
-                      <View
-                        style={{
-                          width: `${slot.level}%`,
-                          backgroundColor: getBatteryColor(slot.level),
-                        }}
-                        className="h-full"
-                      />
-                    </View>
-                    <Text
-                      className="absolute inset-0 text-center leading-8 text-xs font-bold"
-                      style={{ color: slot.level < 30 ? "#fff" : "#000" }}
-                    >
-                      {slot.level}%
-                    </Text>
-                  </View>
-                  <Text className="text-gray-900 font-medium">
-                    {slot.label}
-                  </Text>
-                </View>
-
-                {slot.swappable ? (
-                  <View className="flex-row items-center gap-2">
-                    <Text className="text-gray-900 font-medium">Swappable</Text>
-                    <View className="w-6 h-6 rounded-full bg-orange-500 items-center justify-center">
-                      <Text className="text-white text-xs font-bold">⚡</Text>
-                    </View>
-                  </View>
-                ) : (
-                  <View className="flex-row items-center gap-2">
-                    <Text className="text-gray-400">Not Swappable</Text>
-                    <View className="w-6 h-6 rounded-full bg-gray-200 items-center justify-center">
-                      {/* <Info size={14} color="#9CA3AF" /> */}
-                    </View>
-                  </View>
-                )}
+      {/* Main Content */}
+      <ScrollView
+        className="flex-1 bg-gray-50"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        {/* Quick Info Section */}
+        <View className="bg-white px-5 py-5">
+          {/* Quick Stats Cards */}
+          <View className="flex-row gap-3 mb-5">
+            <View className="flex-1 bg-sky-50 rounded-2xl p-4 items-center">
+              <View className="bg-sky-500 w-12 h-12 rounded-full items-center justify-center mb-2">
+                <Battery size={24} color="white" fill="white" />
               </View>
-            ))}
+              <Text className="text-sky-900 font-bold text-xl">
+                {station.swappableBatteries}
+              </Text>
+              <Text className="text-sky-600 text-xs text-center">
+                Batteries Ready
+              </Text>
+            </View>
+
+            <View className="flex-1 bg-emerald-50 rounded-2xl p-4 items-center">
+              <View className="bg-emerald-500 w-12 h-12 rounded-full items-center justify-center mb-2">
+                <Star size={24} color="white" fill="white" />
+              </View>
+              <Text className="text-emerald-900 font-bold text-xl">4.5</Text>
+              <Text className="text-emerald-600 text-xs text-center">
+                Rating
+              </Text>
+            </View>
           </View>
 
-          {/*Review */}
-          <View className="mt-6">
-            <Text className="text-xs font-semibold text-gray-500 uppercase mb-3 tracking-wide">
-              Station Reviews
-            </Text>
-
-            {reviews.map((review) => (
-              <View
-                key={review.id}
-                className="bg-gray-50 p-4 rounded-xl mb-3 border border-gray-100"
-              >
-                {/* Header avatar name rating */}
-                <View className="flex-row items-center justify-between mb-2">
-                  <View className="flex-row items-center gap-3">
-                    <Image
-                      source={{ uri: review.avatar }}
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <View>
-                      <Text className="font-semibold text-gray-900">
-                        {review.name}
-                      </Text>
-                      <Text className="text-xs text-gray-500">
-                        {review.date}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Rating */}
-                  <View className="flex-row items-center">
-                    {[...Array(5)].map((_, i) => (
-                      // <Ionicons
-                      //   key={i}
-                      //   name={i < review.rating ? "star" : "star-outline"}
-                      //   size={16}
-                      //   color="#FACC15"
-                      // />
-                      <Text key={i}>icon star</Text>
-                    ))}
-                  </View>
-                </View>
-
-                {/* Comment */}
-                <Text className="text-gray-700 text-sm leading-5">
-                  {review.comment}
+          {/* Address */}
+          <View className="bg-gray-50 rounded-2xl p-4 mb-3">
+            <View className="flex-row items-start gap-3">
+              <View className="bg-sky-100 p-2 rounded-lg mt-0.5">
+                <MapPin size={18} color="#0ea5e9" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-gray-500 text-xs font-semibold mb-1">
+                  LOCATION
+                </Text>
+                <Text className="text-gray-800 text-sm leading-5">
+                  {station.address}
                 </Text>
               </View>
-            ))}
+              <TouchableOpacity className="bg-sky-500 w-10 h-10 rounded-full items-center justify-center">
+                <NavigationIcon size={18} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
 
-            {/* Nút xem thêm */}
-            <TouchableOpacity className="mt-2">
-              <Text className="text-blue-500 font-medium text-center">
-                View all reviews
+          {/* Opening Hours */}
+          <View className="bg-gray-50 rounded-2xl p-4">
+            <View className="flex-row items-center gap-3">
+              <View className="bg-orange-100 p-2 rounded-lg">
+                <Clock size={18} color="#f97316" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-gray-500 text-xs font-semibold mb-1">
+                  OPENING HOURS
+                </Text>
+                <Text className="text-gray-800 text-sm font-medium">
+                  Monday - Sunday, 10:00 AM - 9:00 PM
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Battery Status Section */}
+        <View className="bg-white mt-2 px-5 py-5">
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className="text-lg font-bold text-gray-900">
+              Battery Status
+            </Text>
+            <View className="bg-sky-50 px-3 py-1 rounded-full">
+              <Text className="text-sky-700 text-xs font-semibold">
+                {batterySlots.filter((s) => s.swappable).length} Available
+              </Text>
+            </View>
+          </View>
+
+          {batterySlots.map((slot, index) => (
+            <View
+              key={slot.id}
+              className={`flex-row items-center justify-between py-3.5 ${
+                index < batterySlots.length - 1 ? "border-b border-gray-50" : ""
+              }`}
+            >
+              <View className="flex-row items-center gap-3 flex-1">
+                {/* Battery Icon with Level */}
+                <View className="relative w-14">
+                  <View className="w-14 h-8 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                    <View
+                      style={{
+                        width: `${slot.level}%`,
+                        backgroundColor: getBatteryColor(slot.level),
+                      }}
+                      className="h-full"
+                    />
+                  </View>
+                  <Text
+                    className="absolute inset-0 text-center leading-8 text-[11px] font-bold"
+                    style={{ color: slot.level < 30 ? "#fff" : "#000" }}
+                  >
+                    {slot.level}%
+                  </Text>
+                </View>
+                <Text className="text-gray-800 font-semibold text-base">
+                  {slot.label}
+                </Text>
+              </View>
+
+              {slot.swappable ? (
+                <View className="bg-emerald-50 px-3 py-1.5 rounded-full flex-row items-center gap-1.5">
+                  <Zap size={14} color="#10b981" fill="#10b981" />
+                  <Text className="text-emerald-700 font-semibold text-xs">
+                    Ready
+                  </Text>
+                </View>
+              ) : (
+                <View className="bg-gray-100 px-3 py-1.5 rounded-full flex-row items-center gap-1.5">
+                  <Info size={14} color="#9ca3af" />
+                  <Text className="text-gray-500 font-medium text-xs">
+                    Charging
+                  </Text>
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
+
+        {/* Reviews Section */}
+        <View className="bg-white mt-2 px-5 py-5">
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className="text-lg font-bold text-gray-900">Reviews</Text>
+            <TouchableOpacity>
+              <Text className="text-sky-500 font-semibold text-sm">
+                See All
               </Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
-      </View>
 
-      <View className="px-5 pb-5 pt-1 bg-blue-primary border-t border-gray-100">
-        <TouchableOpacity className="bg-blue-primary py-4 rounded-xl items-center">
-          <Text className="text-white font-semibold text-lg">Book Now</Text>
+          {reviews.map((review) => (
+            <View key={review.id} className="bg-gray-50 p-4 rounded-2xl mb-3">
+              {/* Header avatar name rating */}
+              <View className="flex-row items-center justify-between mb-2">
+                <View className="flex-row items-center gap-3">
+                  <Image
+                    source={{ uri: review.avatar }}
+                    className="w-11 h-11 rounded-full border-2 border-white"
+                  />
+                  <View>
+                    <Text className="font-bold text-gray-900 text-base">
+                      {review.name}
+                    </Text>
+                    <Text className="text-xs text-gray-500">{review.date}</Text>
+                  </View>
+                </View>
+
+                {/* Rating */}
+                <View className="flex-row items-center bg-amber-50 px-2 py-1 rounded-lg">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={14}
+                      color="#fbbf24"
+                      fill={i < review.rating ? "#fbbf24" : "transparent"}
+                    />
+                  ))}
+                </View>
+              </View>
+
+              {/* Comment */}
+              <Text className="text-gray-600 text-sm leading-5 mt-1">
+                {review.comment}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+
+      {/* Fixed Bottom Button */}
+      <View className="absolute bottom-0 left-0 right-0 bg-white px-5 py-4 border-t border-gray-100">
+        <TouchableOpacity className="overflow-hidden rounded-2xl shadow-lg">
+          <LinearGradient
+            colors={["#0ea5e9", "#0284c7"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className="py-4 items-center"
+          >
+            <Text className="text-white font-bold text-lg">
+              Book This Station
+            </Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     </View>

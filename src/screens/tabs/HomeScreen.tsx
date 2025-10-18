@@ -9,6 +9,12 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  ScanQrCode,
+  CalendarCheck,
+  Headphones,
+  History,
+} from "lucide-react-native";
 
 export default function HomeScreen() {
   const flatListRef = useRef<FlatList>(null);
@@ -23,19 +29,19 @@ export default function HomeScreen() {
   const featureList = [
     {
       label: "Swap Battery",
-      // icon: <MaterialIcons name="qr-code-scanner" size={34} color="white" />,
+      icon: <ScanQrCode size={34} color="white" />,
     },
     {
       label: "Booking",
-      // icon: <MaterialIcons name="calendar-month" size={34} color="white" />,
+      icon: <CalendarCheck size={34} color="white" />,
     },
     {
       label: "Support",
-      // icon: <MaterialIcons name="headphones" size={34} color="white" />,
+      icon: <Headphones size={34} color="white" />,
     },
     {
       label: "History",
-      // icon: <MaterialIcons name="history" size={34} color="white" />,
+      icon: <History size={34} color="white" />,
     },
   ];
 
@@ -93,8 +99,7 @@ export default function HomeScreen() {
             {featureList.map((item, index) => (
               <View key={index} className="w-1/3 items-center mb-6">
                 <View className="bg-blue-four rounded-full w-16 h-16 items-center justify-center">
-                  {/* {item.icon} */}
-                  <Text>icon</Text>
+                  {item.icon}
                 </View>
                 <Text className="text-white font-semibold">{item.label}</Text>
               </View>

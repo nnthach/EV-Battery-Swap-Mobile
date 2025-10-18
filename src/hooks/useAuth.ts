@@ -3,7 +3,7 @@ import {
   getToken,
   login as loginService,
   logoutService,
-} from "@/services/authService";
+} from "@/src/services/authService";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   logout,

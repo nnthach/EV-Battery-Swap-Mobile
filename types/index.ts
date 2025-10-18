@@ -4,6 +4,7 @@ export interface User {
   email: string;
   fullName: string;
   avatar: string;
+  phone?: string;
   role: string;
 }
 
@@ -43,4 +44,5 @@ export type RootStackParamList = {
 
 export type StackParamList = {
   StationDetail: { stationId: string };
+  AccountInformation: undefined;
 };

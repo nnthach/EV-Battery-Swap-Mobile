@@ -10,6 +10,6 @@
     "**/*.ts",
     "**/*.tsx",
     "nativewind-env.d.ts",
-    "services/authService.js"
+    "src/services/authService.js"
   ]
 }

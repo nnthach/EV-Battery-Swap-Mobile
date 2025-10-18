@@ -5,6 +5,7 @@ import HomeScreen from "../screens/tabs/HomeScreen";
 import ProfileScreen from "../screens/tabs/ProfileScreen";
 import BookingScreen from "../screens/tabs/BookingScreen";
 import StationScreen from "../screens/tabs/StationScreen";
+import { Home, CalendarCheck, MapPin, User } from "lucide-react-native";
 
 const Tab = createBottomTabNavigator();
 export default function TabsNavigator() {
@@ -12,13 +13,15 @@ export default function TabsNavigator() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        // tabBarIcon: ({ color, size }) => {
-        //   let iconName: keyof typeof Ionicons.glyphMap = "home";
-        //   if (route.name === "Home") iconName = "home";
-        //   else if (route.name === "Profile") iconName = "person";
-        //   else if (route.name === "Settings") iconName = "settings";
-        //   return <Ionicons name={iconName} size={size} color={color} />;
-        // },
+        tabBarIcon: ({ color, size }) => {
+          if (route.name === "Home") return <Home size={size} color={color} />;
+          else if (route.name === "Booking")
+            return <CalendarCheck size={size} color={color} />;
+          else if (route.name === "Station")
+            return <MapPin size={size} color={color} />;
+          else if (route.name === "Profile")
+            return <User size={size} color={color} />;
+        },
         tabBarActiveTintColor: "#2563eb",
         tabBarInactiveTintColor: "gray",
       })}
@@ -27,6 +30,7 @@ export default function TabsNavigator() {
       <Tab.Screen name="Booking" component={BookingScreen} />
       <Tab.Screen name="Station" component={StationScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
+      {/* History moved to StackNavigator */}
     </Tab.Navigator>
   );
 }

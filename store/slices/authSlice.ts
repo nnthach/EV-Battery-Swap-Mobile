@@ -1,6 +1,5 @@
 import { AuthState, User } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { router } from "expo-router";
 
 const initialState: AuthState = {
   user: null,
@@ -31,7 +30,6 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = null;
       state.isAuthenticated = false;
-      router.replace("/(auth)/welcome");
     },
   },
 });

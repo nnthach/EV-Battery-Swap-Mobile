@@ -1,7 +1,7 @@
 // import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { Station } from "../types/index";
+import { Station } from "../../types/index";
 import CustomButton from "./CustomButton";
 
 interface StationBookingBottomSheetProps {

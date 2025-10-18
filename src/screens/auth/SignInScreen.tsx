@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { LoginForm, RootStackParamList } from "@/types";
@@ -16,12 +17,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { login } from "@/services/authService";
+import { login } from "@/src/services/authService";
 
 type AppNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function SignInScreen() {
   const navigation = useNavigation<AppNavigationProp>();
-
+  const [loading, setLoading] = useState(false);
   const handleChange = (name: string, value: string) => {
     setSignInForm((prev) => ({
       ...prev,
@@ -36,6 +37,7 @@ export default function SignInScreen() {
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       const user = await login(signInForm);
       navigation.reset({
         index: 0,
@@ -43,6 +45,8 @@ export default function SignInScreen() {
       });
     } catch (error) {
       console.log("sign in err", error);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -99,11 +103,16 @@ export default function SignInScreen() {
 
                   <TouchableOpacity
                     onPress={handleSubmit}
+                    disabled={loading}
                     className="bg-blue-third p-3 w-[80%] rounded-full items-center"
                   >
-                    <Text className="text-xl text-white font-medium">
-                      Sign In
-                    </Text>
+                    {loading ? (
+                      <ActivityIndicator size="small" color="#FFFFFF" />
+                    ) : (
+                      <Text className="text-xl text-white font-medium">
+                        Sign In
+                      </Text>
+                    )}
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() =>
