@@ -1,6 +1,6 @@
-// import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
+import { X, MapPin, Clock, Map, Search, Navigation } from "lucide-react-native";
 import { Station } from "../../types/index";
 import CustomButton from "./CustomButton";
 
@@ -9,14 +9,13 @@ interface StationBookingBottomSheetProps {
   userLocation: [number, number] | null;
   minutes: number;
   seconds: number;
+  distance?: string;
+  duration?: number;
+  isCountdownActive?: boolean;
   onGoogleMap: () => void;
   onGetDirections: (station: Station) => void;
+  onBooking: (station: Station) => void;
   onClose: () => void;
-  isLoadingRoute?: boolean;
-  routeInfo?: {
-    distance: string;
-    duration: string;
-  } | null;
 }
 
 export default function StationBookingBottomSheet({
@@ -24,80 +23,102 @@ export default function StationBookingBottomSheet({
   userLocation,
   minutes,
   seconds,
+  distance,
+  duration,
+  isCountdownActive = false,
   onGoogleMap,
   onGetDirections,
+  onBooking,
   onClose,
-  isLoadingRoute = false,
-  routeInfo = null,
 }: StationBookingBottomSheetProps) {
   const [isLoadingDirections, setIsLoadingDirections] = useState(false);
-  const [isLoadingCancel, setIsLoadingCancel] = useState(false);
+  const [isLoadingMaps, setIsLoadingMaps] = useState(false);
+  const [isLoadingBooking, setIsLoadingBooking] = useState(false);
+  const [showBookingButton, setShowBookingButton] = useState(false);
 
-  if (!station) return null;
+  // Remove countdown timer effect since we're simplifying the logic
+
+  // Show booking button if we have route info or if it was already shown
+  const shouldShowBookingButton = showBookingButton || (distance && duration);
 
   const handleGetDirections = async () => {
+    if (!station) return;
+
     setIsLoadingDirections(true);
     try {
-      // Simulate loading time
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       onGetDirections(station);
+      // Change button to booking after getting directions
+      setShowBookingButton(true);
     } finally {
       setIsLoadingDirections(false);
     }
   };
 
   const handleGoogleMap = async () => {
-    setIsLoadingCancel(true);
+    setIsLoadingMaps(true);
     try {
-      // Simulate loading time
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       onGoogleMap();
     } finally {
-      setIsLoadingCancel(false);
+      setIsLoadingMaps(false);
     }
   };
 
+  const handleBooking = async () => {
+    if (!station) return;
+
+    setIsLoadingBooking(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      onBooking(station);
+    } finally {
+      setIsLoadingBooking(false);
+    }
+  };
+
+  if (!station) return null;
+
   return (
     <View className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl">
-      <View className="p-6 pb-28">
+      <View className="p-6 pb-2">
         {/* Close Button */}
         <TouchableOpacity
-          className="absolute top-4 right-4 w-8 h-8 bg-gray-100 rounded-full items-center justify-center"
+          className="absolute top-4 right-4 w-8 h-8 bg-gray-100 rounded-full items-center justify-center z-10"
           onPress={onClose}
         >
-          {/* <Ionicons name="close" size={20} color="#6b7280" /> */}
+          <X size={20} color="#6b7280" />
         </TouchableOpacity>
-        {/* Route Info / Pickup Timer */}
-        <View className="mb-6">
-          {routeInfo && (
-            <>
-              <View className="flex-row justify-center gap-10 items-center">
-                <View className="items-center">
-                  <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mb-2">
-                    {/* <Ionicons name="location" size={20} color="#3b82f6" /> */}
-                  </View>
-                  <Text className="text-xs text-gray-500 mb-1">
-                    Khoảng Cách
-                  </Text>
-                  <Text className="text-lg font-bold text-gray-900">
-                    {routeInfo.distance}
-                  </Text>
+
+        {/* Remove countdown timer UI since we're simplifying */}
+
+        {/* Route Info */}
+        {distance && duration && (
+          <View className="mb-6 px-4">
+            <View className="flex-row justify-around items-center">
+              <View className=" flex-row gap-4 items-center">
+                <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center mb-2">
+                  <MapPin size={18} color="#3b82f6" />
                 </View>
-                <View className="items-center">
-                  <View className="w-12 h-12 bg-green-100 rounded-full items-center justify-center mb-2">
-                    {/* <Ionicons name="time" size={20} color="#22c55e" /> */}
-                  </View>
-                  <Text className="text-xs text-gray-500 mb-1">
-                    Thời Gian Ước Tính
-                  </Text>
-                  <Text className="text-lg font-bold text-gray-900">
-                    {routeInfo.duration}
-                  </Text>
-                </View>
+
+                <Text className="text-lg font-bold text-gray-900">
+                  {distance} km
+                </Text>
               </View>
-            </>
-          )}
-        </View>
+
+              <View className="w-px h-16 bg-gray-300" />
+
+              <View className="items-center flex-row gap-4">
+                <View className="w-8 h-8 bg-green-100 rounded-full items-center justify-center mb-2">
+                  <Clock size={18} color="#22c55e" />
+                </View>
+                <Text className="text-lg font-bold text-gray-900">
+                  {duration} phút
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
 
         {/* Station Image and Status */}
         <View className="flex-row mb-4">
@@ -106,32 +127,43 @@ export default function StationBookingBottomSheet({
             className="w-20 h-20 rounded-lg mr-4"
           />
           <View className="flex-1">
-            <View className="flex-row items-center mb-2">
-              <View className="w-2 h-2 bg-green-500 rounded-full mr-2" />
-              <Text className="text-green-600 text-sm font-medium">Open</Text>
-              <View className="w-2 h-2 bg-orange-500 rounded-full ml-4 mr-2" />
-              <Text className="text-orange-600 text-sm font-medium">
-                {station.swappableBatteries} Batteries Swappable
-              </Text>
+            <View className="flex-row items-center mb-2 flex-wrap">
+              <View className="flex-row items-center mr-3">
+                <View className="w-2 h-2 bg-green-500 rounded-full mr-1.5" />
+                <Text className="text-green-600 text-xs font-medium">
+                  Đang Mở
+                </Text>
+              </View>
+              <View className="flex-row items-center">
+                <View className="w-2 h-2 bg-orange-500 rounded-full mr-1.5" />
+                <Text className="text-orange-600 text-xs font-medium">
+                  {station.swappableBatteries} Pin Có Thể Đổi
+                </Text>
+              </View>
             </View>
-            <Text className="text-lg font-bold text-gray-900 mb-1">
+            <Text
+              className="text-base font-bold text-gray-900 mb-1"
+              numberOfLines={2}
+            >
               {station.name}
             </Text>
           </View>
         </View>
 
         {/* Address */}
-        <View className="flex-row items-start mb-3">
-          {/* <Ionicons name="location-outline" size={20} color="#6b7280" /> */}
-          <Text className="flex-1 text-gray-600 text-sm ml-2">
+        <View className="flex-row items-start mb-3 bg-gray-50 p-3 rounded-lg">
+          <MapPin size={18} color="#6b7280" />
+          <Text className="flex-1 text-gray-700 text-sm ml-2">
             {station.address}
           </Text>
         </View>
 
         {/* Opening Hours */}
-        <View className="flex-row items-center mb-6">
-          {/* <Ionicons name="time-outline" size={20} color="#6b7280" /> */}
-          <Text className="text-gray-600 text-sm ml-2">{station.openTime}</Text>
+        <View className="flex-row items-center mb-6 bg-gray-50 p-3 rounded-lg">
+          <Clock size={18} color="#6b7280" />
+          <Text className="text-gray-700 text-sm ml-2 font-medium">
+            {station.openTime}
+          </Text>
         </View>
 
         {/* Action Buttons */}
@@ -140,32 +172,46 @@ export default function StationBookingBottomSheet({
             title="Google Maps"
             onPress={handleGoogleMap}
             variant="primary"
-            loading={isLoadingCancel}
-            disabled={isLoadingDirections || isLoadingRoute}
-            icon={
-              !isLoadingCancel ? (
-                // <Ionicons name={"map"} size={16} color="white" />
-                <Text>icon here</Text>
-              ) : undefined
-            }
+            loading={isLoadingMaps}
+            disabled={isLoadingDirections || isLoadingBooking}
+            icon={!isLoadingMaps ? <Map size={18} color="white" /> : undefined}
             fullWidth
             className="flex-1"
           />
-          <CustomButton
-            title={"Tra Cứu"}
-            onPress={handleGetDirections}
-            variant="secondary"
-            loading={isLoadingDirections || isLoadingRoute}
-            disabled={isLoadingCancel}
-            icon={
-              !isLoadingDirections && !isLoadingRoute ? (
-                <Text>icon here</Text>
-              ) : // <Ionicons name={"search"} size={16} color="grey" />
-              undefined
-            }
-            fullWidth
-            className="flex-1"
-          />
+
+          {!shouldShowBookingButton ? (
+            <CustomButton
+              title="Chỉ Đường"
+              onPress={handleGetDirections}
+              variant="secondary"
+              loading={isLoadingDirections}
+              disabled={isLoadingMaps || isLoadingBooking || isCountdownActive}
+              icon={
+                !isLoadingDirections ? (
+                  <Search size={18} color="#3b82f6" />
+                ) : undefined
+              }
+              fullWidth
+              className="flex-1"
+            />
+          ) : (
+            <CustomButton
+              title={isCountdownActive ? "Đã Đặt Chỗ" : "Đặt Ngay"}
+              onPress={handleBooking}
+              variant="secondary"
+              loading={isLoadingBooking}
+              disabled={
+                isLoadingMaps || isLoadingDirections || isCountdownActive
+              }
+              icon={
+                !isLoadingBooking ? (
+                  <Navigation size={18} color="#3b82f6" />
+                ) : undefined
+              }
+              fullWidth
+              className="flex-1"
+            />
+          )}
         </View>
       </View>
     </View>
